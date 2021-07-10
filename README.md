@@ -56,3 +56,9 @@ scan the QR code using your WhatsApp!
 | Sticker Command   |      ✔️      |
 | Button Command   |      ✔️      |
 | Sticker Hash   |      ✔️      |
+
+Information: how to use or add a case sticker command by replying to the sticker you want to make a command and giving the hash command then check in the console log and copy the given code, paste the code into the case after the switch (commandstick)
+
+### Also Thanks to
+
+  [`Baileys`](https://github.com/adiwajshing/Baileys)
