@@ -1,7 +1,7 @@
 /*
  
  Example Simple WhatsApp BOT
- Source https://github.com/zhwzein/
+ Source https://github.com/zhwzein/ExampleSelep
  By zen's
 
 */
@@ -35,6 +35,10 @@ const ffmpeg = require('fluent-ffmpeg')
 const moment = require("moment-timezone")
 const request = require('request')
 
+// DATABASE
+const setting = JSON.parse(fs.readFileSync('./settings.json'))
+const _simi = JSON.parse(fs.readFileSync('./database/simi.json'))
+
 async function starts() {
 const zn = new WAConnection()    
 zn.version = [2, 2119, 6]
@@ -58,6 +62,7 @@ fs.writeFileSync(authofile, JSON.stringify(zn.base64EncodedAuthInfo(), null, '\t
 
 // CONFIG
 selep = true
+afk_respon = {}
 var prefix = "."
 var apikey = "YOURAPIKEY"
 var fakethumb = '' || fs.readFileSync('./zenz/fake.jpeg')
@@ -99,6 +104,7 @@ zn.on('chat-update', async (mek) => {
 		const groupAdmins = isGroup ? getGroupAdmins(groupMembers) : ''
 		const isBotGroupAdmins = groupAdmins.includes(botNumber) || false
 		const isGroupAdmins = groupAdmins.includes(sender) || false
+        const isSimi = _simi.includes(sender) || false 
         const conts = mek.key.fromMe ? zn.user.jid : zn.contacts[sender] || { notify: jid.replace(/@.+/, '') }
         const pushname = mek.key.fromMe ? zn.user.name : conts.notify || conts.vname || conts.name || '-'
 
@@ -127,6 +133,45 @@ zn.on('chat-update', async (mek) => {
         // LOG
         if (isGroup && isCmd) console.log(color(`[${time}]`, 'yellow'), color('[ EXEC ]'), 'from', color(sender.split("@")[0]), 'in', color(groupName))
         if (!isGroup && isCmd) console.log(color(`[${time}]`, 'yellow'), color("[ EXEC ]"), 'from', color(sender.split("@")[0]))
+
+        // FUNCTION
+        if (!isGroup && !isCmd && isSimi) {
+            if (mek.key.fromMe === false && ! from.includes("status@broadcast")){
+                await zn.updatePresence(from, Presence.composing)
+            try {
+                simi = await axios.get(`https://zenzapi.xyz/api/simih?text=${budy}&apikey=${apikey}`)
+                reply(simi.data.result.message)
+            } catch {
+                reply(`error`)
+            }}
+        }
+
+        if (setting.responder.status){
+            if (!isGroup){
+                if (mek.key.fromMe === false && ! from.includes("status@broadcast")){
+                    if(! afk_respon[sender]){
+                        afk_respon[sender] = true
+                        const getReason = setting.responder.reason
+                        zn.sendMessage(from, menu.afk(pushname, getReason), text, [sender])
+                    }
+                }
+            }
+        }
+
+        if (!isGroup && !isCmd) {
+            if (mek.key.fromMe === false && ! from.includes("status@broadcast")){
+                if (budy.match('mulai')){
+                    _simi.push(from)
+                    fs.writeFileSync('./database/simi.json', JSON.stringify(_simi))
+                    reply('Halo ada yg bisa saya bantu ?')
+                } else if (budy.match('stop')){
+                    var simo = _simi.indexOf(from)
+                    _simi.splice(simo, 1)
+                    fs.writeFileSync('./database/simi.json', JSON.stringify(_simi))
+                    reply('BOT chatt sukses dimatikan')
+                }
+            }
+        }
 
         // SELF ON
         if (!mek.key.fromMe && selep === true) return
@@ -254,10 +299,14 @@ zn.on('chat-update', async (mek) => {
                 }, {})
             zn.relayWAMessage(stikrandom, {waitForAck: true})
             break
+            /*case '7THhxG0GXfRzCR2YFXjBmOExfhf7ialY2vd9VFm6VGE=':
+                reply(`Mengrandom`)
+            break*/
 
         }
         
         switch (command) {
+
             case 'hash':
                 if (!isQuotedSticker) return reply('Reply Stickernya')
                 const encmeds = JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo
@@ -270,7 +319,7 @@ zn.on('chat-update', async (mek) => {
             case 'menu':
                 var numberwa = "0@s.whatsapp.net"
                 var textnya = " Z E N Z - A P I"
-                ini_csreply = {
+                menus = {
                     contextInfo: {
                         stanzaId: 'B826873620DD5947E683E3ABE663F263',
                         participant: numberwa,
@@ -283,7 +332,7 @@ zn.on('chat-update', async (mek) => {
                         }
                     }
                 }
-                zn.sendMessage(from, menu.Help(prefix), text, ini_csreply)
+                zn.sendMessage(from, menu.Help(prefix), text, menus)
             break
             case 'quotes':
                 let quotes = zn.prepareMessageFromContent(from, {
@@ -366,14 +415,14 @@ zn.on('chat-update', async (mek) => {
 
             // OWNER
             case 'setfake':
-                if ((isMedia && !mek.message.videoMessage || isQuotedImage || isQuotedSticker) && args.length == 0) {
+            if ((isMedia && !mek.message.videoMessage || isQuotedImage || isQuotedSticker) && args.length == 0) {
                 setf = isQuotedImage || isQuotedSticker ? JSON.parse(JSON.stringify(mek).replace('quotedM','m')).message.extendedTextMessage.contextInfo : mek
                 setb = await zn.downloadMediaMessage(setf)
                 fs.writeFileSync(`./zenz/fake.jpeg`, setb)
                 reply('Sukses')
-                } else {
+            } else {
                 reply(`Kirim gambar dengan caption ${prefix}setfake`)
-                }
+            }
             break
             case 'setprefix':
                 if (!mek.key.fromMe) return
@@ -391,6 +440,36 @@ zn.on('chat-update', async (mek) => {
                 if (selep === true) return zn.sendMessage(from, 'Mode Self already active', text)
                 selep = true
                 reply(`Success activated Mode Self`)
+            break
+            /*case 'simi':
+                if (ar[0] === 'enable') {
+                    if (simih === false) return zn.sendMessage(from, 'Mode Simi already active', text)
+                    simih = false
+                    reply(`Success activated Mode Simi`)
+                } else if (ar[0] === 'disable') {
+                    if (simih === true) return zn.sendMessage(from, 'Mode Simi already deactive', text)
+                    simih = true
+                    reply(`Success deactivated Mode Simi`)
+                } else {
+                    reply('Pilih enable atau disable!')
+                }
+            break*/
+            case 'afk':
+                setting.responder.reason = q ? q : 'Nothing.'
+                fs.writeFileSync('./settings.json', JSON.stringify(setting, null, 2))
+
+                setting.responder.status = true
+                fs.writeFileSync('./settings.json', JSON.stringify(setting, null, 2))
+                zn.sendMessage(from, `Afk activated dengan alasan :\n${setting.responder.reason}`, text)
+            break
+            case 'unafk':
+                if (setting.responder.status == false){
+                    zn.sendMessage(from, `Afk Mode already deactivated`, text)
+                } else {
+                    setting.responder.status = false
+                    fs.writeFileSync('./settings.json', JSON.stringify(setting, null, 2))
+                    zn.sendMessage(from, `Afk deactivated`, text)
+                }
             break
 
             default:
