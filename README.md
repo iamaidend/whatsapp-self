@@ -51,11 +51,13 @@ scan the QR code using your WhatsApp!
 
 | Function | Availability |
 | :------: | :----------: |
-| Self Mode     |      ✔️      |
-| Public Mode   |      ✔️      |
-| Sticker Command   |      ✔️      |
-| Button Command   |      ✔️      |
-| Sticker Hash   |      ✔️      |
+| Self mode     |      ✔️      |
+| Public mode   |      ✔️      |
+| Sticker command   |      ✔️      |
+| Button command   |      ✔️      |
+| Sticker to filehash   |      ✔️      |
+| Afk pm response   |      ✔️      |
+| Simi pm response   |      ✔️      |
 
 Information: how to use or add a case sticker command by replying to the sticker you want to make a command and giving the hash command then check in the console log and copy the given code, paste the code into the case after the switch (commandstick)
 
