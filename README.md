@@ -1,6 +1,6 @@
 # Example Self WhatsApp BOT  
 
-<a href="https://github.com/zhwzein"><img title="Author" src="https://img.shields.io/badge/Author-Zhwzein-red.svg?style=for-the-badge&logo=github" /></a>  
+<a href="https://github.com/iamaidend"><img title="Creador" src="https://img.shields.io/badge/Author-iamaidend.svg?style=for-the-badge&logo=github" /></a>  
 <a href="https://github.com/zhwzein/ExampleSelep"><img title="Stars" src="https://img.shields.io/github/stars/zhwzein/ExampleSelep?color=yellow&style=flat-square" /></a>
 <a href="https://github.com/zhwzein/ExampleSelep/network/members"><img title="Forks" src="https://img.shields.io/github/forks/zhwzein/ExampleSelep?color=green&style=flat-square" /></a>
 <a href="https://github.com/zhwzein/ExampleSelep/watchers"><img title="Watching" src="https://img.shields.io/github/watchers/zhwzein/ExampleSelep?label=watchers&color=blue&style=flat-square" /></a> <br>
